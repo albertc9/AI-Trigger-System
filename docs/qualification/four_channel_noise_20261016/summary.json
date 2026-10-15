@@ -1,0 +1,278 @@
+{
+  "source_commit": "7f0dc8641303ed742c78c47237453fea6996dacf",
+  "csv": "/Users/albert/Downloads/all_channels_ampl (1).csv",
+  "csv_sha256": "51df65125651790cadfcf5c49450fba7b7aca3064f696cad5093ba4da2bec428",
+  "samples_per_channel": 10000,
+  "channels": 4,
+  "sample_rate_hz_user_confirmed": 1000000000.0,
+  "capture_seconds": 1e-05,
+  "raw_code_lattice_mV": 0.19540791402051783,
+  "lattice_max_residual_mV": 6.550396136617564e-07,
+  "mean_mV": [
+    -0.46761112769395113,
+    -0.01387396170347929,
+    1.1184367102041841,
+    0.5854030152529478
+  ],
+  "demeaned_rms_mV": [
+    2.827044985517801,
+    2.792970102310229,
+    2.829820965886461,
+    2.8408800969518033
+  ],
+  "gain_ppm": [
+    4421578,
+    4475522,
+    4417241,
+    4400045
+  ],
+  "baseline_uv": [
+    -468,
+    -14,
+    1118,
+    585
+  ],
+  "post_calibration_mean_model_units": [
+    0.00021831541375006523,
+    4.755242124995058e-05,
+    -3.86508587500211e-05,
+    4.125042187495098e-05
+  ],
+  "post_calibration_rms_ac_model_units": [
+    0.9995117350204437,
+    0.9995116735302074,
+    0.9995118375314219,
+    0.9995117632872041
+  ],
+  "stream_windows": 39,
+  "stream_seconds": 9.984e-06,
+  "unused_tail_samples": 16,
+  "sliding_windows": 9745,
+  "sliding_windows_are_correlated": true,
+  "native_score_scale": 1024,
+  "threshold_word_scale": 16,
+  "comparison": "strict signed score > threshold",
+  "phase0_score_min_max": [
+    1.09765625,
+    8.4716796875
+  ],
+  "sliding_score_min_max": [
+    -0.03125,
+    10.669921875
+  ],
+  "sliding_score_quantiles": {
+    "0": -0.03125,
+    "0.5": 3.806640625,
+    "0.9": 6.34140625,
+    "0.95": 7.269140624999999,
+    "0.99": 8.797460937499995,
+    "0.999": 9.91143749999997,
+    "1": 10.669921875
+  },
+  "threshold_results": [
+    {
+      "threshold": 7.2,
+      "phase0_events": 2,
+      "phase0_replay_rate_hz": 200320.51282051284,
+      "sliding_positions_above": 512,
+      "phase_events_min_max": [
+        0,
+        5
+      ],
+      "phase_replay_rate_min_max_hz": [
+        0.0,
+        513980.2631578947
+      ]
+    },
+    {
+      "threshold": 7.1875,
+      "phase0_events": 2,
+      "phase0_replay_rate_hz": 200320.51282051284,
+      "sliding_positions_above": 512,
+      "phase_events_min_max": [
+        0,
+        5
+      ],
+      "phase_replay_rate_min_max_hz": [
+        0.0,
+        513980.2631578947
+      ]
+    },
+    {
+      "threshold": 7.25,
+      "phase0_events": 2,
+      "phase0_replay_rate_hz": 200320.51282051284,
+      "sliding_positions_above": 495,
+      "phase_events_min_max": [
+        0,
+        5
+      ],
+      "phase_replay_rate_min_max_hz": [
+        0.0,
+        513980.2631578947
+      ]
+    }
+  ],
+  "phase0_min_word_zero_events": 136,
+  "all_phases_min_word_zero_events": 171,
+  "phase0_rate_resolution_hz": 100160.25641025642,
+  "zero_events_poisson_95pct_upper_hz": 300053.31265564816,
+  "target_1hz_probability_per_window": 2.56e-07,
+  "target_1hz_expected_count_in_capture": 9.984e-06,
+  "native_hls_binary_sha256": "694fc5462ec89cae3fadc1b71102eaf9a9870cd424e47c47e843f7ecf12ebcc4",
+  "verilator_binary_sha256": "b97b3a9e692c53e72b8962067ffe864544ad75cc98d65cdc5c8423e0760b6703",
+  "cached_native_files_verified": [
+    "cnn_core.v",
+    "cnn_core_dense_wide_stream_array_array_ap_fixed_1u_config12_Pipeline_DenseValues.v",
+    "cnn_core_dense_wide_stream_array_array_ap_fixed_1u_config12_Pipeline_DenseValues_w12_rbkb.dat",
+    "cnn_core_dense_wide_stream_array_array_ap_fixed_1u_config12_Pipeline_DenseValues_w12_rbkb.v",
+    "cnn_core_dense_wide_stream_array_array_ap_fixed_21_11_5_3_0_1u_config12_s.v",
+    "cnn_core_fifo_w480_d4_A.v",
+    "cnn_core_fifo_w864_d4_A.v",
+    "cnn_core_fifo_w912_d4_A.v",
+    "cnn_core_flow_control_loop_pipe.v",
+    "cnn_core_flow_control_loop_pipe_sequential_init.v",
+    "cnn_core_hls_deadlock_detection_unit.v",
+    "cnn_core_hls_deadlock_detector.vh",
+    "cnn_core_hls_deadlock_idx0_monitor.v",
+    "cnn_core_hls_deadlock_kernel_monitor_top.vh",
+    "cnn_core_hls_deadlock_report_unit.vh",
+    "cnn_core_mac_muladd_10s_6s_11s_16_1_1.v",
+    "cnn_core_mac_muladd_10s_6s_16s_17_1_1.v",
+    "cnn_core_mac_muladd_10s_6s_17s_17_1_1.v",
+    "cnn_core_mul_10s_6s_16_1_1.v",
+    "cnn_core_phara_pool_aligned_hybrid_p8_cl_array_array_array_array_config3_config5_s.v",
+    "cnn_core_regslice_both.v",
+    "cnn_core_relu_array_ap_fixed_48u_array_ap_ufixed_18_8_5_3_0_48u_relu_config8_s.v",
+    "cnn_core_scheduled_pool_array_array_ap_fixed_10_5_0_2_0_48u_config9_4u_s.v",
+    "cnn_core_shared_conv_array_array_ap_fixed_48u_config7_4u_ravel_matrix_conv2d_1_2u_s.v",
+    "cnn_core_sparsemux_17_3_10_1_1.v",
+    "cnn_core_start_for_dense_wide_stream_array_array_ap_fixed_21_11_5_3_0_1u_config12_U0.v",
+    "cnn_core_start_for_relu_array_ap_fixed_48u_array_ap_ufixed_18_8_5_3_0_48u_relu_config8dEe.v",
+    "cnn_core_start_for_scheduled_pool_array_array_ap_fixed_10_5_0_2_0_48u_config9_4u_U0.v",
+    "cnn_core_start_for_shared_conv_array_array_ap_fixed_48u_config7_4u_ravel_matrix_conv2dcud.v"
+  ],
+  "rtl_batches": [
+    {
+      "first_start": 0,
+      "windows": 1096,
+      "log_sha256": "97d133acb68610c09a36bab7d2660f4408a1265d87a2e68a0b243e8b62a13037"
+    },
+    {
+      "first_start": 1096,
+      "windows": 1096,
+      "log_sha256": "1634938092d0242fff374117e0758a74fa974d9c5a98bf363477555e1e8daa41"
+    },
+    {
+      "first_start": 2192,
+      "windows": 1096,
+      "log_sha256": "11e35c2aed8cc66e5240ec954ea81ef41cfbddc8e2c08babb10ac3f6d068aa55"
+    },
+    {
+      "first_start": 3288,
+      "windows": 1096,
+      "log_sha256": "1e9a0337fdbfd52f2529dca66c7562ab92d3c7f56653864b2b2f7cd77b3bc9c6"
+    },
+    {
+      "first_start": 4384,
+      "windows": 1096,
+      "log_sha256": "b5d8871d4daea08b172d43aee72b26bcaa02a5793889a2d3efef4729a15ae3ec"
+    },
+    {
+      "first_start": 5480,
+      "windows": 1096,
+      "log_sha256": "fb331e2426fead4ef30de32466a7307287f5c95c18f3e457b9f1380f53f9cda0"
+    },
+    {
+      "first_start": 6576,
+      "windows": 1096,
+      "log_sha256": "8b035a881733fca26b38de3eaf3aba09b7336ced4057c35abdaaecacc9aacfc3"
+    },
+    {
+      "first_start": 7672,
+      "windows": 1096,
+      "log_sha256": "caf3e96871a2e54b784fe19c2244febe34d2b19da62ccd1ad863538ef26348c3"
+    },
+    {
+      "first_start": 8768,
+      "windows": 977,
+      "log_sha256": "a6f33fd5990dafa8d64605cba9b9fce31ab558df218900eac8f81eb8b75e4460"
+    }
+  ],
+  "data_reuse_warning": "The capture statistics match the data used to choose these gains/baselines; this is an in-sample replay, not a new calibration-stability test.",
+  "post_quantization_mean_model_units": [
+    0.000853125,
+    -0.000309375,
+    -0.00015625,
+    -0.00029375
+  ],
+  "post_quantization_rms_ac_model_units": [
+    0.9995723473798585,
+    0.9993581934513542,
+    0.9996251128352787,
+    0.9994799974353815
+  ],
+  "system_simulation": {
+    "adc_mhz": 250,
+    "cnn_mhz": 195,
+    "samples_per_adc_beat": 4,
+    "cases": [
+      {
+        "threshold_word": 115,
+        "threshold": 7.1875,
+        "completion": [
+          "PASS native system windows=39 events=2 gap=0 phase=0.000000"
+        ]
+      },
+      {
+        "threshold_word": 116,
+        "threshold": 7.25,
+        "completion": [
+          "PASS native system windows=39 events=2 gap=0 phase=0.000000"
+        ]
+      },
+      {
+        "threshold_word": 171,
+        "threshold": 10.6875,
+        "completion": [
+          "PASS native system windows=39 events=0 gap=0 phase=0.000000"
+        ]
+      }
+    ],
+    "testbench_change": "Only testbench CNN oscillator adjusted from 200 to 195 MHz; production RTL unchanged.",
+    "testbench_sha256": "5ef60c090b1624baf487d63b36a9d01b2b7cc6c6341b041dba190b9d58acf233"
+  },
+  "server_source_closure_entries_matching": 66,
+  "generated_data_hashes": {
+    "raw_codes.csv": "da967e70d477008f346cd0038b3560e5507f39eebb7a998f73b2abf0d6dcba74",
+    "rtl_batch_00000/all_expected.hex": "017b2c1bc88b5764585bd03c8520870da1f57ec29f48fefc86e98de1415a2bea",
+    "rtl_batch_00000/all_input.hex": "b80451c7beaea2c6ebdcd6ed5fa7c938a710207d5e07ff042d3c55b28767c0f3",
+    "rtl_batch_01096/all_expected.hex": "e7a7e1fea71d1cebf7556dc2e5b233a6d09aaeff40098e69bfc703e9c9dfc661",
+    "rtl_batch_01096/all_input.hex": "c98bdfcf2115cf6f94e64f502f52032c4fa1efb8126d4d2ca0b76a500af5e872",
+    "rtl_batch_02192/all_expected.hex": "67e31552e6c65c29788bf868ec6bd9dd557f3230bd4ccbc0c69ab11989b04034",
+    "rtl_batch_02192/all_input.hex": "e56cb02bfb4213c52df574b3f42557cebd207ac36916a20676ce027720c4a7de",
+    "rtl_batch_03288/all_expected.hex": "9c9b905d0d89833d835aa8d39c8b579a3de2ee73da6db0637e16384d62f14e98",
+    "rtl_batch_03288/all_input.hex": "5ad34591848bb95f0ce24ccf17b21ce1f6cc05ab68f3177cefcf67feaa79ea1f",
+    "rtl_batch_04384/all_expected.hex": "66ead4653c2dcbd03472ef24ba74d7d247785f90d8c9d783ef93f3c5058983f6",
+    "rtl_batch_04384/all_input.hex": "77dd8220004e5e0a8ebf839246a2c2855a0407d40612057a29f68bcf63d2e3b2",
+    "rtl_batch_05480/all_expected.hex": "5ebafaf70a879c811be4d7d0cc83eebea06c72ff6a3fbec9b0a08a350e38890c",
+    "rtl_batch_05480/all_input.hex": "8df763ab8503a70ebb264722ecffaae806de32644e8cf9c2f6bdabb0dd68a634",
+    "rtl_batch_06576/all_expected.hex": "54372e854d1e31785525023681811638a7b0d6ab283c0054c47c5ffdeea04bfa",
+    "rtl_batch_06576/all_input.hex": "ebd065668812a0e178613a0e6161f8c66adede8505a60079e1c75c4dfcb790e8",
+    "rtl_batch_07672/all_expected.hex": "82130858121a6bce39668c4905ea7a401708faae9005e5985ce5eb88be92db29",
+    "rtl_batch_07672/all_input.hex": "8b795ce717be58ff7c9454042d9f625a8de7dedbc048fedf00171c6809f250ca",
+    "rtl_batch_08768/all_expected.hex": "d3da68c1436a581d23d3eb9d505c022dfe798ac42e6b7fec6302b5119a065c70",
+    "rtl_batch_08768/all_input.hex": "1ad2043aa42b1c657425f17bf45f9503334e80d5072cca5db11f5c43cb3676b2",
+    "scores.csv": "51ed75c7addf737b8526ec86dba5a64e563395f846adc72eac2a61fd2abc8b1a",
+    "sliding_reference/adc_conversion.txt": "74ee39150d8637b3b1b8b6e876723ae161e292a8e797eea5ef64a00a95e13443",
+    "sliding_reference/all_expected.hex": "be9ae4df76039ab5b9e10d94085e171a2ca28550c13afc228e3ef3351d47793a",
+    "sliding_reference/all_input.hex": "f38f5503a61dbe94105defd1cd84a0a8f5c5805b015b787f73a9de0c2bfa858a",
+    "sliding_reference/csim.log": "ff1f05d3578df644b8490522a5bf11b1c8c75f00e6e3c18af31e2136a9478ee8",
+    "stream_reference/adc.hex": "b1f7c1eb5cdfb7ac028fee60c92fe4abbac12f226fc2bdad98d0f780439b9541",
+    "stream_reference/all_expected.hex": "1dbdf5e31fca4c611f5139a2065e3867d515ce8aa8ee9ba4c1ff13ad8d4b4986",
+    "stream_reference/all_input.hex": "0b1b086378cb61e914804d16f98052ba3867045ab7fc5725430a5cb06232b8d0",
+    "stream_reference/reference.json": "81f708ba54d9c7de85cc331953e4afc59d14c83dc219828d493092963610bb08",
+    "summary.json": "810ae704d84dd0c41654c54d62bab7afd64cfe1e3d77887b9744e9ad6d980b9a",
+    "threshold_scan.csv": "5e4e165c5ff1c5df9680ce2a39c149afc82672806bf7d5bc7ede53a1719ad24d"
+  }
+}

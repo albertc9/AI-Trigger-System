@@ -1,0 +1,30 @@
+{
+  "adc_mhz": 250,
+  "cnn_mhz": 195,
+  "samples_per_adc_beat": 4,
+  "cases": [
+    {
+      "threshold_word": 115,
+      "threshold": 7.1875,
+      "completion": [
+        "PASS native system windows=39 events=2 gap=0 phase=0.000000"
+      ]
+    },
+    {
+      "threshold_word": 116,
+      "threshold": 7.25,
+      "completion": [
+        "PASS native system windows=39 events=2 gap=0 phase=0.000000"
+      ]
+    },
+    {
+      "threshold_word": 171,
+      "threshold": 10.6875,
+      "completion": [
+        "PASS native system windows=39 events=0 gap=0 phase=0.000000"
+      ]
+    }
+  ],
+  "testbench_change": "Only testbench CNN oscillator adjusted from 200 to 195 MHz; production RTL unchanged.",
+  "testbench_sha256": "5ef60c090b1624baf487d63b36a9d01b2b7cc6c6341b041dba190b9d58acf233"
+}
