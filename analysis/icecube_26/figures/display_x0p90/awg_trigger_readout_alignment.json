@@ -1,0 +1,108 @@
+{
+  "event": "ai_event_0003",
+  "event_timestamp_unconverted": 336888,
+  "capture_samples_per_channel": 256,
+  "capture_sample_period_ns": 1.0,
+  "plotted_capture_channels": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "reference_channels": [
+    0,
+    2
+  ],
+  "capture_AC_RMS_mV": [
+    2.7319607976218654,
+    2.592539210973676,
+    2.863535172254436,
+    2.4801832132370443
+  ],
+  "capture_mean_mV": [
+    0.0091552734375,
+    0.00762939453125,
+    0.020599365234375,
+    -0.01373291015625
+  ],
+  "display_amplitude_multiplier_by_channel": [
+    0.9,
+    1.0,
+    0.9,
+    1.0
+  ],
+  "displayed_capture_AC_RMS_mV": [
+    2.4587647178596788,
+    2.592539210973676,
+    2.5771816550289928,
+    2.4801832132370443
+  ],
+  "displayed_reference_AC_RMS_mV": {
+    "0": 2.007217984345521,
+    "2": 2.160854626802105
+  },
+  "matches": {
+    "0": {
+      "first_sample_in_awg_record_ns": 303.525,
+      "last_sample_in_awg_record_ns": 558.525,
+      "window_end_in_awg_record_ns_exclusive": 559.525,
+      "first_sample_original_csv_time_ns": 203.52499999999998,
+      "last_sample_original_csv_time_ns": 458.525,
+      "pearson_r": 0.9495708075818509,
+      "alignment_grid_ns": 0.025,
+      "reference_amplitude_multiplier": 1.0,
+      "reference_offset_added_mV": 0.0
+    },
+    "2": {
+      "first_sample_in_awg_record_ns": 300.3,
+      "last_sample_in_awg_record_ns": 555.3,
+      "window_end_in_awg_record_ns_exclusive": 556.3,
+      "first_sample_original_csv_time_ns": 200.3,
+      "last_sample_original_csv_time_ns": 455.29999999999995,
+      "pearson_r": 0.9501330288527715,
+      "alignment_grid_ns": 0.025,
+      "reference_amplitude_multiplier": 1.0,
+      "reference_offset_added_mV": 0.0
+    }
+  },
+  "overview": {
+    "waveform": "Complete noisy AWG input before ADC quantization and HPF",
+    "pulse": "User-supplied 2rms noiseless estimate, before HPF",
+    "pulse_source_constant_multiplier": 1.400175,
+    "ch2_cyclic_delay_samples": 15,
+    "pulse_support": {
+      "0": {
+        "first_nonzero_sample_in_awg_record_ns": 316.0,
+        "last_nonzero_sample_in_awg_record_ns": 409.0
+      },
+      "2": {
+        "first_nonzero_sample_in_awg_record_ns": 331.0,
+        "last_nonzero_sample_in_awg_record_ns": 424.0
+      }
+    },
+    "display_scale_matches_readout_panels": true,
+    "recorded_chunk_shading": "256 ns interval from the existing post-HPF time alignment"
+  },
+  "readout_pulse_overlay": {
+    "channels": [
+      0,
+      2
+    ],
+    "waveform": "Estimated noiseless pulse after the same ADC quantization and fixed-point HPF as the noisy reference",
+    "hpf_parameters_sha256": "9d20328b90b846180ad85c84e2659650f31b803aa4a0c81fab6cb7746ad3df03",
+    "hpf_model_validation": "Exact ADC-code reproduction of both saved noisy reference channels",
+    "hpf_initial_state": "Zero at the start of the full 1000-sample trace, as in the saved noisy reference",
+    "alignment": "Existing noisy post-HPF reference time shifts; periodic linear interpolation",
+    "display_scale_matches_other_traces": true,
+    "used_for_alignment_or_correlation": false
+  },
+  "voltage_scale": "Signed ADC code * 800 / 4096 mV, before CNN gain",
+  "amplitude_processing": "Ch0 and Ch2 reference and recording multiplied by 0.90 for display; Ch1 and Ch3 unchanged. Source data and alignment remain unscaled; no amplitude fitting, DC subtraction or RMS normalization.",
+  "alignment": "Independent channel shifts fitted only from the noisy post-HPF reference; the same shifts and periodic linear interpolation are applied to the filtered pulse",
+  "timing_note": "The 0.025 ns search grid is not a timing-accuracy measurement. No exact trigger-decision time is inferred.",
+  "software_versions": {
+    "python": "3.14.6",
+    "numpy": "2.4.6",
+    "matplotlib": "3.11.0"
+  }
+}

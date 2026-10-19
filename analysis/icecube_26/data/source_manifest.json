@@ -1,0 +1,67 @@
+{
+  "event": "ai_event_0003",
+  "event_timestamp": 336888,
+  "plotted_capture_channels": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "signal_injected_channels": [
+    0,
+    2
+  ],
+  "sample_period_ns": 1.0,
+  "adc_mV_per_code": 0.1953125,
+  "data_files": {
+    "ai_event_0003.csv": {
+      "sha256": "3ae8f7b8b0886d1e2c25901de75f72f2a3b269a96bc4992c141cd0a3bd7be452",
+      "bytes": 6727
+    },
+    "awg_reference.npz": {
+      "sha256": "16a1a57e050a427edb51b16a2a533b99ec7465e04cdcf9d5c89891bec859e97c",
+      "bytes": 9399
+    },
+    "signal_delayed_2rms_noiseless_estimate.csv": {
+      "sha256": "b752681d9b94a167c7c2ed0fc8d3b16981611977285b103b638323b189cc5fdd",
+      "bytes": 12506
+    },
+    "hpf_lookahead.json": {
+      "sha256": "9d20328b90b846180ad85c84e2659650f31b803aa4a0c81fab6cb7746ad3df03",
+      "bytes": 1070
+    }
+  },
+  "sources": {
+    "capture": "/Users/albert/Downloads/Triggered/ai_event_0003.csv",
+    "capture_sha256": "3ae8f7b8b0886d1e2c25901de75f72f2a3b269a96bc4992c141cd0a3bd7be452",
+    "awg_csvs": [
+      {
+        "channel": 0,
+        "file": "/Users/albert/Downloads/testing!/signal_delayed_2rms_offset_x1p27.csv",
+        "sha256": "c3ad446b0059623d81fb5414d1abbe47bcabed53357a58ec6f228d8729c0d15e"
+      },
+      {
+        "channel": 2,
+        "file": "/Users/albert/Downloads/testing!/signal_delayed_2rms_offset_x1p27_roll15ns.csv",
+        "sha256": "2b35f4949995dd9bde0c6e4555108bf21b0177d4f538e26a31a89af1e7add349"
+      }
+    ],
+    "frozen_scan_waveforms": "/var/folders/yh/1wn0n7d17tx1_ccyq6h68f2c0000gn/T/hpf-score-ch0-ch2-x1p05-again-20261016-vbjeyocc/vectors/waveforms.npz",
+    "frozen_scan_waveforms_sha256": "32dd783fa59883388cb0c8f08f4531e2d4d400d9bf0c78f8281c28c0ce14ae64",
+    "noiseless_estimate": {
+      "file": "/Users/albert/Downloads/signal_delayed_noiseless_estimate/signal_delayed_2rms_noiseless_estimate.csv",
+      "sha256": "b752681d9b94a167c7c2ed0fc8d3b16981611977285b103b638323b189cc5fdd",
+      "description": "Unscaled single-channel 2rms noiseless pulse estimate supplied by the user"
+    },
+    "hpf_parameters": {
+      "file": "/Users/albert/Library/Mobile Documents/com~apple~CloudDocs/Works/UC_Irvine_Group/gateware/validation/vivado-2022.2/hpf-20261016/lookahead.json",
+      "sha256": "9d20328b90b846180ad85c84e2659650f31b803aa4a0c81fab6cb7746ad3df03",
+      "description": "Frozen qualified Q16 look-ahead HPF coefficients and fixed-point widths; validated by exact reproduction of the saved noisy reference"
+    }
+  },
+  "reference_description": "Quantized fourth-order frontend HPF output, before CNN gain; only Ch0 and Ch2 reference channels retained.",
+  "reference_amplitude_scaling": "None; original physical ADC scale is used for both reference and capture.",
+  "provenance_note": "The source CSV names retain x1p27 although both were subsequently multiplied by 1.05 twice; this frozen reference matches those final file hashes.",
+  "source_template_constant_multiplier": 1.400175,
+  "ch2_cyclic_delay_samples": 15
+}

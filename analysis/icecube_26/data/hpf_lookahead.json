@@ -1,0 +1,61 @@
+{
+  "state_width": 27,
+  "state_fractional_bits": 12,
+  "product_fractional_bits": 16,
+  "accumulator_width": 52,
+  "registered_latency": 17,
+  "sections": [
+    {
+      "section": 0,
+      "numerator_q16": [
+        48308,
+        -10635,
+        -11314,
+        -9156,
+        -5261,
+        -914,
+        2753,
+        5008,
+        28336,
+        -264,
+        -2399,
+        -3522,
+        -3573,
+        -2762,
+        -1460,
+        -78,
+        8645
+      ],
+      "a8_q16": 30839,
+      "a16_q16": 10321,
+      "dc_adjustment_at_tap8": 0,
+      "maximum_quantized_pole_radius": 0.8908972440438352
+    },
+    {
+      "section": 1,
+      "numerator_q16": [
+        65536,
+        -24868,
+        -12550,
+        -6529,
+        -3575,
+        -2117,
+        -1388,
+        -1015,
+        -44468,
+        15860,
+        7726,
+        3764,
+        1835,
+        895,
+        437,
+        214,
+        243
+      ],
+      "a8_q16": -43651,
+      "a16_q16": 138,
+      "dc_adjustment_at_tap8": -1,
+      "maximum_quantized_pole_radius": 0.9499040920756376
+    }
+  ]
+}
