@@ -19,7 +19,10 @@ use ieee.numeric_std.all;
 use work.AI_TRIGGER_PKG.all;
 
 entity AI_TRIGGER_TOP_TB_WRAP is
-    generic (DIRECT_ADC : boolean := false);
+    generic (
+        DIRECT_ADC : boolean := false;
+        EVENT_RATE_BIN_CHUNKS : positive := EVENT_RATE_BIN_CHUNKS_1S
+    );
     port (
         CLK_ADC         : in  std_logic;
         ADC_SRC_CLK     : in  std_logic;
@@ -57,7 +60,10 @@ entity AI_TRIGGER_TOP_TB_WRAP is
         ADC_INPUT_OVERFLOW_COUNT : out std_logic_vector(31 downto 0);
         DROPPED_TRIGGER_COUNT : out std_logic_vector(31 downto 0);
         RING_MISS_COUNT       : out std_logic_vector(31 downto 0);
-        CHUNK_OVERFLOW  : out std_logic
+        CHUNK_OVERFLOW  : out std_logic;
+        EVENT_RATE_COUNT      : out std_logic_vector(EVENT_RATE_COUNT_WIDTH - 1 downto 0);
+        EVENT_RATE_WINDOW_SEC : out std_logic_vector(EVENT_RATE_WINDOW_SEC_WIDTH - 1 downto 0);
+        EVENT_RATE_HIGH       : out std_logic
     );
 end entity AI_TRIGGER_TOP_TB_WRAP;
 
@@ -72,6 +78,8 @@ architecture rtl of AI_TRIGGER_TOP_TB_WRAP is
     signal adc_input_overflow_count_i : unsigned(31 downto 0);
     signal dropped_trigger_count_i : unsigned(31 downto 0);
     signal ring_miss_count_i : unsigned(31 downto 0);
+    signal event_rate_count_i : unsigned(EVENT_RATE_COUNT_WIDTH - 1 downto 0);
+    signal event_rate_window_sec_i : unsigned(EVENT_RATE_WINDOW_SEC_WIDTH - 1 downto 0);
     signal data_str_core : std_logic;
     signal rst_adc_src : std_logic := '1';
     signal rst_adc     : std_logic := '1';
@@ -129,6 +137,7 @@ begin
     end generate;
 
     u_DUT : entity work.AI_TRIGGER_CORE
+        generic map (EVENT_RATE_BIN_CHUNKS => EVENT_RATE_BIN_CHUNKS)
         port map (
             CLK_ADC        => CLK_ADC,
             CLK_CNN        => CLK_CNN,
@@ -162,7 +171,10 @@ begin
             EVENT_LOSS => EVENT_LOSS,
             DROPPED_TRIGGER_COUNT => dropped_trigger_count_i,
             RING_MISS_COUNT       => ring_miss_count_i,
-            CHUNK_OVERFLOW => CHUNK_OVERFLOW
+            CHUNK_OVERFLOW => CHUNK_OVERFLOW,
+            EVENT_RATE_COUNT      => event_rate_count_i,
+            EVENT_RATE_WINDOW_SEC => event_rate_window_sec_i,
+            EVENT_RATE_HIGH       => EVENT_RATE_HIGH
         );
 
     CNN_OUT_CHUNK_ID <= std_logic_vector(cnn_out_chunk_id_i);
@@ -173,5 +185,7 @@ begin
     ADC_INPUT_OVERFLOW_COUNT <= std_logic_vector(adc_input_overflow_count_i);
     DROPPED_TRIGGER_COUNT <= std_logic_vector(dropped_trigger_count_i);
     RING_MISS_COUNT <= std_logic_vector(ring_miss_count_i);
+    EVENT_RATE_COUNT <= std_logic_vector(event_rate_count_i);
+    EVENT_RATE_WINDOW_SEC <= std_logic_vector(event_rate_window_sec_i);
 
 end architecture rtl;

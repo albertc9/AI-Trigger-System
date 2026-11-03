@@ -7,6 +7,8 @@
 --   * CLK_CNN domain CNN inference clock
 --   * CLK_ADC domain runtime trigger configuration and operational status
 --   * CLK_ADC domain event stream: waveform batch, LAST, timestamp, and anchor
+--   * CLK_ADC domain event rate: emitted events in the last 64 one-second bins
+--     of ADC data time, the window length in seconds, and an over-range flag
 --
 -- CNN_THRESH is a signed 32-bit configuration word with four fractional bits:
 -- threshold = signed(CNN_THRESH) / 16. This interface is independent of CNN IP.
@@ -18,6 +20,9 @@ use ieee.numeric_std.all;
 use work.AI_TRIGGER_PKG.all;
 
 entity AI_TRIGGER_TOP is
+    generic (
+        EVENT_RATE_BIN_CHUNKS : positive := EVENT_RATE_BIN_CHUNKS_1S
+    );
     port (
         CLK_ADC        : in  std_logic;
         CLK_CNN        : in  std_logic;
@@ -46,7 +51,11 @@ entity AI_TRIGGER_TOP is
         INVALID_TRIGGER_MODE : out std_logic;
         HILO_BLANKING        : out std_logic;
         HILO_CONFIG_ERROR    : out std_logic;
-        EVENT_LOSS           : out std_logic
+        EVENT_LOSS           : out std_logic;
+
+        EVENT_RATE_COUNT      : out std_logic_vector(EVENT_RATE_COUNT_WIDTH - 1 downto 0);
+        EVENT_RATE_WINDOW_SEC : out std_logic_vector(EVENT_RATE_WINDOW_SEC_WIDTH - 1 downto 0);
+        EVENT_RATE_HIGH       : out std_logic
     );
 end entity AI_TRIGGER_TOP;
 
@@ -54,6 +63,8 @@ architecture structural of AI_TRIGGER_TOP is
     signal adc_data4 : adc_data4_t;
     signal event_timestamp_i : timestamp_t;
     signal event_trigger_offset_i : beat_offset_t;
+    signal event_rate_count_i : unsigned(EVENT_RATE_COUNT_WIDTH - 1 downto 0);
+    signal event_rate_window_sec_i : unsigned(EVENT_RATE_WINDOW_SEC_WIDTH - 1 downto 0);
 begin
     gen_ch : for ch in 0 to N_ADC_CH-1 generate
         gen_s : for s in 0 to N_BATCH_S-1 generate
@@ -64,6 +75,7 @@ begin
     end generate;
 
     u_CORE : entity work.AI_TRIGGER_CORE
+        generic map (EVENT_RATE_BIN_CHUNKS => EVENT_RATE_BIN_CHUNKS)
         port map (
             CLK_ADC        => CLK_ADC,
             CLK_CNN        => CLK_CNN,
@@ -97,9 +109,14 @@ begin
             EVENT_LOSS => EVENT_LOSS,
             DROPPED_TRIGGER_COUNT => open,
             RING_MISS_COUNT       => open,
-            CHUNK_OVERFLOW => open
+            CHUNK_OVERFLOW => open,
+            EVENT_RATE_COUNT      => event_rate_count_i,
+            EVENT_RATE_WINDOW_SEC => event_rate_window_sec_i,
+            EVENT_RATE_HIGH       => EVENT_RATE_HIGH
         );
 
     EVENT_TIMESTAMP <= std_logic_vector(event_timestamp_i);
     EVENT_TRIGGER_OFFSET <= std_logic_vector(event_trigger_offset_i);
+    EVENT_RATE_COUNT <= std_logic_vector(event_rate_count_i);
+    EVENT_RATE_WINDOW_SEC <= std_logic_vector(event_rate_window_sec_i);
 end architecture structural;
