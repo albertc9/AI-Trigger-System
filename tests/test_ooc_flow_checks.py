@@ -178,6 +178,16 @@ class OocFlowChecks(unittest.TestCase):
         ):
             self.assertIn(port, adc_output_delay)
 
+    def test_event_rate_outputs_have_ooc_boundary_delay(self) -> None:
+        xdc = read("HDL/constraints/ai_trigger_ooc.xdc")
+
+        adc_output_delay = " ".join(
+            line for line in xdc.splitlines()
+            if line.strip().startswith("set_output_delay") and "CLK_ADC" in line
+        )
+        for port in ("EVENT_RATE_COUNT*", "EVENT_RATE_WINDOW_SEC*", "EVENT_RATE_HIGH"):
+            self.assertIn(port, adc_output_delay)
+
     def test_daq_top_has_only_adc_and_cnn_clocks(self) -> None:
         xdc = read("HDL/constraints/ai_trigger_ooc.xdc")
         top = read("HDL/rtl/AI_TRIGGER_TOP.vhd")
