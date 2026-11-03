@@ -1,0 +1,164 @@
+{
+  "status": "passed",
+  "server_root": "/home/work1/Works/ait-event-rate-20261103-e47ba83",
+  "vivado": "2023.2 (Build 4029153)",
+  "part": "xcku5p-ffvb676-2-e",
+  "adc_mhz": 250,
+  "cnn_mhz": 200,
+  "runs": {
+    "v4_2_final": {
+      "source_commit": "ef510cf",
+      "wns_ns": 0.217,
+      "tns_ns": 0.0,
+      "whs_ns": 0.004,
+      "ths_ns": 0.0,
+      "per_clock": {
+        "CLK_ADC": {
+          "wns_ns": 0.255,
+          "whs_ns": 0.031
+        },
+        "CLK_CNN": {
+          "wns_ns": 0.217,
+          "whs_ns": 0.004
+        }
+      },
+      "clb_luts": 75480,
+      "clb_registers": 52010,
+      "block_ram_tiles": 25,
+      "uram": 6,
+      "dsps": 64,
+      "methodology_rules": {
+        "XDCH-2": 904
+      },
+      "drc_rules": {
+        "DPIP-2": 192,
+        "DPOP-3": 64,
+        "DPOP-4": 64,
+        "RTSTAT-10": 1
+      },
+      "cdc_summary_rows": 4,
+      "default_activity_total_power_w": 3.31,
+      "event_rate_monitor": {
+        "total_luts": 75,
+        "logic_luts": 65,
+        "lutrams": 10,
+        "srls": 0,
+        "registers": 68,
+        "ramb36": 0,
+        "ramb18": 0,
+        "uram": 0,
+        "dsp": 0
+      },
+      "cdc_summary": [
+        "Warning CLK_CNN CLK_ADC No Common Primary Clock Asynch Clock Groups 74 74 0 0 0",
+        "Warning input port clock CLK_ADC No Common Primary Clock False Path 1 1 0 0 0",
+        "Warning CLK_ADC CLK_CNN No Common Primary Clock Asynch Clock Groups 185 185 0 0 0",
+        "Warning input port clock CLK_CNN No Common Primary Clock False Path 1 1 0 0 0"
+      ]
+    },
+    "v4_2_before_output_delay": {
+      "source_commit": "e47ba83",
+      "wns_ns": 0.273,
+      "tns_ns": 0.0,
+      "whs_ns": 0.035,
+      "ths_ns": 0.0,
+      "per_clock": {
+        "CLK_ADC": {
+          "wns_ns": 0.273,
+          "whs_ns": 0.043
+        },
+        "CLK_CNN": {
+          "wns_ns": 0.309,
+          "whs_ns": 0.035
+        }
+      },
+      "clb_luts": 75483,
+      "clb_registers": 52010,
+      "block_ram_tiles": 25,
+      "uram": 6,
+      "dsps": 64,
+      "methodology_rules": {
+        "TIMING-18": 24,
+        "XDCH-2": 880
+      },
+      "drc_rules": {
+        "DPIP-2": 192,
+        "DPOP-3": 64,
+        "DPOP-4": 64,
+        "RTSTAT-10": 1
+      },
+      "cdc_summary_rows": 4,
+      "default_activity_total_power_w": 3.322,
+      "event_rate_monitor": {
+        "total_luts": 76,
+        "logic_luts": 66,
+        "lutrams": 10,
+        "srls": 0,
+        "registers": 68,
+        "ramb36": 0,
+        "ramb18": 0,
+        "uram": 0,
+        "dsp": 0
+      },
+      "cdc_summary": [
+        "Warning CLK_CNN CLK_ADC No Common Primary Clock Asynch Clock Groups 74 74 0 0 0",
+        "Warning input port clock CLK_ADC No Common Primary Clock False Path 1 1 0 0 0",
+        "Warning CLK_ADC CLK_CNN No Common Primary Clock Asynch Clock Groups 185 185 0 0 0",
+        "Warning input port clock CLK_CNN No Common Primary Clock False Path 1 1 0 0 0"
+      ]
+    },
+    "v4_1_baseline": {
+      "source_commit": "15e665a",
+      "wns_ns": 0.132,
+      "tns_ns": 0.0,
+      "whs_ns": 0.033,
+      "ths_ns": 0.0,
+      "per_clock": {
+        "CLK_ADC": {
+          "wns_ns": 0.132,
+          "whs_ns": 0.038
+        },
+        "CLK_CNN": {
+          "wns_ns": 0.351,
+          "whs_ns": 0.033
+        }
+      },
+      "clb_luts": 75395,
+      "clb_registers": 51943,
+      "block_ram_tiles": 25,
+      "uram": 6,
+      "dsps": 64,
+      "methodology_rules": {
+        "XDCH-2": 880
+      },
+      "drc_rules": {
+        "DPIP-2": 192,
+        "DPOP-3": 64,
+        "DPOP-4": 64,
+        "RTSTAT-10": 1
+      },
+      "cdc_summary_rows": 4,
+      "default_activity_total_power_w": 3.329,
+      "cdc_summary": [
+        "Warning CLK_CNN CLK_ADC No Common Primary Clock Asynch Clock Groups 74 74 0 0 0",
+        "Warning input port clock CLK_ADC No Common Primary Clock False Path 1 1 0 0 0",
+        "Warning CLK_ADC CLK_CNN No Common Primary Clock Asynch Clock Groups 185 185 0 0 0",
+        "Warning input port clock CLK_CNN No Common Primary Clock False Path 1 1 0 0 0"
+      ]
+    }
+  },
+  "delta_v4_2_final_minus_v4_1": {
+    "clb_luts": 85,
+    "clb_registers": 67,
+    "block_ram_tiles": 0,
+    "uram": 0,
+    "dsps": 0
+  },
+  "cdc_rows_identical_to_v4_1": true,
+  "drc_rules_identical_to_v4_1": true,
+  "notes": [
+    "e47ba83 lacked OOC output delays on the 24 event-rate output bits (TIMING-18 x24); ef510cf adds them.",
+    "Power is the default-activity report_power estimate, not a workload or SAIF result.",
+    "Worst hold path of ef510cf (+0.004 ns) is CNN lane metadata LUTRAM in CLK_CNN, outside the monitor."
+  ]
+}
