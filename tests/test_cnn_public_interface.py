@@ -113,6 +113,38 @@ class CnnPublicInterfaceTest(unittest.TestCase):
         self.assertIn("ADC_INPUT_CDC_FIFO", wrap)
         self.assertRegex(wrap, r"ADC_SRC_READY\s+:\s+out\s+std_logic")
 
+    def test_top_level_publishes_windowed_event_rate(self) -> None:
+        pkg = read("HDL/rtl/AI_TRIGGER_PKG.vhd")
+        top = read("HDL/rtl/AI_TRIGGER_TOP.vhd")
+        core = read("HDL/rtl/AI_TRIGGER_CORE.vhd")
+        wrap = read("HDL/sim/AI_TRIGGER_TOP_TB_WRAP.vhd")
+        sv_tb = read("HDL/sim/tb_ai_trigger_top.sv")
+
+        self.assertRegex(pkg, r"EVENT_RATE_BIN_CHUNKS_1S\s*:\s*positive\s*:=\s*3_906_250")
+        self.assertRegex(pkg, r"EVENT_RATE_BINS\s*:\s*positive\s*:=\s*64")
+        self.assertRegex(pkg, r"EVENT_RATE_BIN_WIDTH\s*:\s*positive\s*:=\s*10")
+        self.assertRegex(pkg, r"EVENT_RATE_COUNT_WIDTH\s*:\s*positive\s*:=\s*16")
+        self.assertRegex(pkg, r"EVENT_RATE_WINDOW_SEC_WIDTH\s*:\s*positive\s*:=\s*7")
+
+        for text in (top, core, wrap):
+            self.assertRegex(
+                text,
+                r"EVENT_RATE_BIN_CHUNKS\s*:\s*positive\s*:=\s*EVENT_RATE_BIN_CHUNKS_1S",
+            )
+        self.assertRegex(top, r"EVENT_RATE_COUNT\s+:\s+out\s+std_logic_vector\(EVENT_RATE_COUNT_WIDTH - 1 downto 0\)")
+        self.assertRegex(top, r"EVENT_RATE_WINDOW_SEC\s+:\s+out\s+std_logic_vector\(EVENT_RATE_WINDOW_SEC_WIDTH - 1 downto 0\)")
+        self.assertRegex(top, r"EVENT_RATE_HIGH\s+:\s+out\s+std_logic")
+        self.assertRegex(core, r"EVENT_RATE_COUNT\s+:\s+out\s+unsigned\(EVENT_RATE_COUNT_WIDTH - 1 downto 0\)")
+        self.assertRegex(core, r"EVENT_RATE_WINDOW_SEC\s+:\s+out\s+unsigned\(EVENT_RATE_WINDOW_SEC_WIDTH - 1 downto 0\)")
+        self.assertRegex(core, r"EVENT_RATE_HIGH\s+:\s+out\s+std_logic")
+        self.assertRegex(wrap, r"EVENT_RATE_COUNT\s*:\s+out\s+std_logic_vector\(EVENT_RATE_COUNT_WIDTH - 1 downto 0\)")
+        self.assertRegex(wrap, r"EVENT_RATE_WINDOW_SEC\s*:\s+out\s+std_logic_vector\(EVENT_RATE_WINDOW_SEC_WIDTH - 1 downto 0\)")
+        self.assertRegex(wrap, r"EVENT_RATE_HIGH\s*:\s+out\s+std_logic")
+        self.assertRegex(sv_tb, r"wire\s+\[15:0\]\s+event_rate_count")
+        self.assertRegex(sv_tb, r"wire\s+\[6:0\]\s+event_rate_window_sec")
+        self.assertRegex(sv_tb, r"wire\s+event_rate_high")
+        self.assertIn(".EVENT_RATE_BIN_CHUNKS (EVENT_RATE_BIN_CHUNKS)", sv_tb)
+
 
 
 
