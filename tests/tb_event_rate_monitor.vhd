@@ -119,6 +119,19 @@ begin
         tick_chunks(BIN_CHUNKS);
         expect_rate(129, 64, '0', "an empty bin must replace the next-oldest bin");
 
+        -- Window now holds 62 bins of 2, one of 5 and one of 0.
+        emit_events(1030);
+        tick_chunks(BIN_CHUNKS);
+        expect_rate(1150, 64, '1', "a bin must saturate at 1023 and raise HIGH");
+
+        for bin_idx in 1 to EVENT_RATE_BINS - 1 loop
+            tick_chunks(BIN_CHUNKS);
+        end loop;
+        expect_rate(1023, 64, '1', "HIGH must hold while the saturated bin is in the window");
+
+        tick_chunks(BIN_CHUNKS);
+        expect_rate(0, 64, '0', "HIGH must clear when the saturated bin leaves");
+
         report "tb_event_rate_monitor passed";
         std.env.stop;
         wait;
