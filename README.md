@@ -36,6 +36,7 @@ AI_TRIGGER_TOP
       RING_READ_ARBITER
       EVENT_RECORDER
       EVENT_OUTPUT_FIFO
+      EVENT_RATE_MONITOR           windowed count of emitted events
 ```
 
 ### Trigger modes
@@ -161,7 +162,8 @@ events; `EVENT_RATE_HIGH` marks a window containing such a second, in which case
 the count is a lower bound. Reset and every active-mode change restart the
 window from 0 seconds. The `AI_TRIGGER_TOP` generic `EVENT_RATE_BIN_CHUNKS`
 shortens the second for simulation only. See
-[Deliverables.md](docs/Deliverables.md#event-rate).
+[Deliverables.md](docs/Deliverables.md#event-rate) and the block-level
+[event rate qualification](docs/qualification/event_rate_20261103/README.md).
 
 ## Source layout
 
@@ -188,6 +190,7 @@ Main integration files:
 | `HDL/rtl/GATED_CNN_READER.vhd` | Hi-Lo-centered waveform replay into CNN |
 | `HDL/rtl/WAVEFORM_RING_BUFFER.vhd` | Shared eight-channel history |
 | `HDL/rtl/EVENT_RECORDER.vhd` | Complete-event ring readout |
+| `HDL/rtl/EVENT_RATE_MONITOR.vhd` | Windowed event rate |
 | `HDL/rtl/CNN_CORE_LANE.vhd` | Per-lane CDC and CNN stream control |
 
 ## Dependencies

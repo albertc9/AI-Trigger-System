@@ -36,6 +36,15 @@ HEALTH_LOG = (
 )
 
 
+def checkout_revision(package: str) -> str:
+    checkout = subprocess.run(
+        ["bender", "path", package], cwd=ROOT, check=True, text=True, stdout=subprocess.PIPE
+    ).stdout.strip()
+    return subprocess.run(
+        ["git", "-C", checkout, "rev-parse", "HEAD"], check=True, text=True, stdout=subprocess.PIPE
+    ).stdout.strip()
+
+
 def write_scope(path: Path, samples: int = 257) -> None:
     voltages = [0.0] * samples
     voltages[0] = 0.050
@@ -162,9 +171,9 @@ class RealNoiseScanTest(unittest.TestCase):
             )
             self.assertEqual(provenance["scan"]["trigger_mode"], 2)
             self.assertTrue(provenance["scan"]["other_raw_channels_zero"])
-            self.assertEqual(
+            self.assertRegex(
                 provenance["dependency_revisions"]["cnn-core"],
-                "eca9b12f9f49f4b7324ed9ed241a44086ca9c842",
+                "^" + checkout_revision("cnn-core") + "(-dirty)?$",
             )
             self.assertEqual(
                 set(provenance["tool_files"]),
@@ -180,6 +189,45 @@ class RealNoiseScanTest(unittest.TestCase):
                 all(len(digest) == 64 for digest in provenance["tool_files"].values())
             )
             self.assertNotIn("Downloads", json.dumps(provenance))
+
+    def test_path_dependency_revision_comes_from_its_checkout(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            checkout = Path(tmp) / "cnn core"
+            checkout.mkdir()
+            git = ["git", "-C", str(checkout), "-c", "user.name=test", "-c", "user.email=test@example.com"]
+            subprocess.run(git + ["init", "-q"], check=True)
+            (checkout / "core.v").write_text("module core; endmodule\n", encoding="utf-8")
+            subprocess.run(git + ["add", "core.v"], check=True)
+            subprocess.run(git + ["commit", "-q", "-m", "core"], check=True)
+            head = subprocess.run(
+                git + ["rev-parse", "HEAD"], check=True, text=True, stdout=subprocess.PIPE
+            ).stdout.strip()
+            hilo_revision = "047d14a25ca0df95d2219eded90e0b449574ae15"
+            lock = Path(tmp) / "Bender.lock"
+            lock.write_text(
+                "packages:\n"
+                "  cnn-core:\n"
+                "    revision: null\n"
+                "    version: null\n"
+                "    source:\n"
+                f"      Path: {checkout}\n"
+                "    dependencies: []\n"
+                "  hilo-trigger:\n"
+                f"    revision: {hilo_revision}\n"
+                "    version: 3.0.0\n"
+                "    source:\n"
+                "      Git: git@github.com:NuDAQ/Hi-Lo-Trigger.git\n"
+                "    dependencies: []\n",
+                encoding="utf-8",
+            )
+
+            self.assertEqual(
+                scan.dependency_revisions(lock),
+                {"cnn-core": head, "hilo-trigger": hilo_revision},
+            )
+
+            (checkout / "core.v").write_text("module changed; endmodule\n", encoding="utf-8")
+            self.assertEqual(scan.dependency_revisions(lock)["cnn-core"], head + "-dirty")
 
     def test_prepare_quantizes_channel_zero_for_current_testbench(self) -> None:
         with tempfile.TemporaryDirectory(prefix="ai-trigger-data3-small-") as work:

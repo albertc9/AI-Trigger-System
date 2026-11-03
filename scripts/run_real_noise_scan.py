@@ -155,6 +155,7 @@ def git_value(repo_root: Path, *args: str) -> str:
 
 
 def dependency_revisions(lock_path: Path) -> dict[str, str]:
+    """Return locked revisions; path dependencies report their checkout HEAD."""
     revisions: dict[str, str] = {}
     package = ""
     for line in lock_path.read_text(encoding="utf-8").splitlines():
@@ -165,6 +166,21 @@ def dependency_revisions(lock_path: Path) -> dict[str, str]:
         revision_match = re.fullmatch(r"    revision: ([0-9a-f]+)", line)
         if package and revision_match:
             revisions[package] = revision_match.group(1)
+            continue
+        path_match = re.fullmatch(r"      Path: (.+)", line)
+        if package and path_match and package not in revisions:
+            checkout = path_match.group(1)
+            head = git_value(lock_path.parent, "-C", checkout, "rev-parse", "HEAD")
+            if head != "unknown":
+                status = git_value(
+                    lock_path.parent,
+                    "-C",
+                    checkout,
+                    "status",
+                    "--porcelain",
+                    "--untracked-files=no",
+                )
+                revisions[package] = head + ("-dirty" if status else "")
     return revisions
 
 
