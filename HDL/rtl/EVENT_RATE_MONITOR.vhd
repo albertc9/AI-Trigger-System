@@ -36,6 +36,7 @@ architecture rtl of EVENT_RATE_MONITOR is
 
     constant WINDOW_FULL : unsigned(EVENT_RATE_WINDOW_SEC_WIDTH - 1 downto 0) :=
         to_unsigned(EVENT_RATE_BINS, EVENT_RATE_WINDOW_SEC_WIDTH);
+    constant BIN_SATURATED : bin_count_t := (others => '1');
 
     -- Completed bins; entries are meaningful only within window_sec_r.
     signal bin_store_r   : bin_store_t := (others => (others => '0'));
@@ -46,6 +47,8 @@ architecture rtl of EVENT_RATE_MONITOR is
         (others => '0');
     signal window_sec_r  : unsigned(EVENT_RATE_WINDOW_SEC_WIDTH - 1 downto 0) :=
         (others => '0');
+    -- Number of saturated bins currently inside the window.
+    signal saturated_bins_r : natural range 0 to EVENT_RATE_BINS := 0;
 
     signal event_done : std_logic;
     signal bin_close  : std_logic;
@@ -55,7 +58,8 @@ begin
     event_done <= EVENT_VALID and EVENT_READY and EVENT_LAST;
     bin_close  <= '1' when CHUNK_TICK = '1' and
         chunk_count_r = EVENT_RATE_BIN_CHUNKS - 1 else '0';
-    bin_value  <= bin_count_r + 1 when event_done = '1' else bin_count_r;
+    bin_value  <= bin_count_r + 1 when event_done = '1' and
+        bin_count_r /= BIN_SATURATED else bin_count_r;
     oldest_bin <= bin_store_r(bin_index_r) when window_sec_r = WINDOW_FULL
         else (others => '0');
 
@@ -69,6 +73,7 @@ begin
     end process;
 
     process (CLK)
+        variable saturated_v : natural range 0 to EVENT_RATE_BINS;
     begin
         if rising_edge(CLK) then
             if RST = '1' then
@@ -77,7 +82,16 @@ begin
                 bin_count_r   <= (others => '0');
                 rate_count_r  <= (others => '0');
                 window_sec_r  <= (others => '0');
+                saturated_bins_r <= 0;
             elsif bin_close = '1' then
+                saturated_v := saturated_bins_r;
+                if oldest_bin = BIN_SATURATED then
+                    saturated_v := saturated_v - 1;
+                end if;
+                if bin_value = BIN_SATURATED then
+                    saturated_v := saturated_v + 1;
+                end if;
+                saturated_bins_r <= saturated_v;
                 chunk_count_r <= 0;
                 bin_count_r   <= (others => '0');
                 rate_count_r  <= rate_count_r +
@@ -102,5 +116,5 @@ begin
 
     EVENT_RATE_COUNT      <= rate_count_r;
     EVENT_RATE_WINDOW_SEC <= window_sec_r;
-    EVENT_RATE_HIGH       <= '0';
+    EVENT_RATE_HIGH       <= '1' when saturated_bins_r /= 0 else '0';
 end architecture rtl;
