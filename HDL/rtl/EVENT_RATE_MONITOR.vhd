@@ -76,7 +76,7 @@ begin
         variable saturated_v : natural range 0 to EVENT_RATE_BINS;
     begin
         if rising_edge(CLK) then
-            if RST = '1' then
+            if RST = '1' or CLEAR = '1' then
                 bin_index_r   <= 0;
                 chunk_count_r <= 0;
                 bin_count_r   <= (others => '0');
