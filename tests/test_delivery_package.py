@@ -7,12 +7,24 @@ import sys
 import tempfile
 import unittest
 
+from scripts import package_delivery
+
 
 ROOT = Path(__file__).resolve().parents[1]
+HILO_REVISION = "047d14a25ca0df95d2219eded90e0b449574ae15"
 
 
 def read(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
+
+
+def checkout_revision(package: str) -> str:
+    checkout = subprocess.run(
+        ["bender", "path", package], cwd=ROOT, check=True, text=True, stdout=subprocess.PIPE
+    ).stdout.strip()
+    return subprocess.run(
+        ["git", "-C", checkout, "rev-parse", "HEAD"], check=True, text=True, stdout=subprocess.PIPE
+    ).stdout.strip()
 
 
 class DeliveryPackageTest(unittest.TestCase):
@@ -62,8 +74,9 @@ class DeliveryPackageTest(unittest.TestCase):
             self.assertTrue((package / "README.md").exists())
             self.assertFalse((package / "assets").exists())
             version = (package / "VERSION.txt").read_text()
-            self.assertIn("cnn-core revision: eca9b12f9f49f4b7324ed9ed241a44086ca9c842", version)
-            self.assertIn("hilo-trigger revision: 047d14a25ca0df95d2219eded90e0b449574ae15", version)
+            self.assertIn("cnn-core-wrapper revision: " + checkout_revision("cnn-core-wrapper"), version)
+            self.assertIn("cnn-core revision: " + checkout_revision("cnn-core"), version)
+            self.assertIn("hilo-trigger revision: " + HILO_REVISION, version)
             self.assertIn("Hi-Lo windows: unsigned 8-bit accepted-sample counts", version)
             self.assertIn("CNN lanes: 2", version)
             self.assertIn("Score format: signed low 21 bits / 512", version)
@@ -107,6 +120,44 @@ class DeliveryPackageTest(unittest.TestCase):
             self.assertNotIn("set_property top", add_files)
             self.assertIn("Keep the integrator's existing project top unchanged", add_files)
             self.assertIn("set_property verilog_define", add_files)
+
+    def test_path_dependency_revision_comes_from_its_checkout(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            checkout = Path(tmp) / "cnn core"
+            checkout.mkdir()
+            git = ["git", "-C", str(checkout), "-c", "user.name=test", "-c", "user.email=test@example.com"]
+            subprocess.run(git + ["init", "-q"], check=True)
+            (checkout / "core.v").write_text("module core; endmodule\n", encoding="utf-8")
+            subprocess.run(git + ["add", "core.v"], check=True)
+            subprocess.run(git + ["commit", "-q", "-m", "core"], check=True)
+            head = subprocess.run(
+                git + ["rev-parse", "HEAD"], check=True, text=True, stdout=subprocess.PIPE
+            ).stdout.strip()
+            lock = Path(tmp) / "Bender.lock"
+            lock.write_text(
+                "packages:\n"
+                "  cnn-core:\n"
+                "    revision: null\n"
+                "    version: null\n"
+                "    source:\n"
+                f"      Path: {checkout}\n"
+                "    dependencies: []\n"
+                "  hilo-trigger:\n"
+                f"    revision: {HILO_REVISION}\n"
+                "    version: 3.0.0\n"
+                "    source:\n"
+                "      Git: git@github.com:NuDAQ/Hi-Lo-Trigger.git\n"
+                "    dependencies: []\n",
+                encoding="utf-8",
+            )
+
+            self.assertEqual(
+                package_delivery.dependency_revisions(lock),
+                {"cnn-core": head, "hilo-trigger": HILO_REVISION},
+            )
+
+            (checkout / "core.v").write_text("module changed; endmodule\n", encoding="utf-8")
+            self.assertEqual(package_delivery.dependency_revisions(lock)["cnn-core"], head + "-dirty")
 
 
 if __name__ == "__main__":
