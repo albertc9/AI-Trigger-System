@@ -159,6 +159,27 @@ begin
         tick_chunks(BIN_CHUNKS);
         expect_rate(0, 1, '0', "first bin after reset");
 
+        -- Only the final beat of a transferred event is an Emitted Event.
+        event_valid <= '1';
+        event_last  <= '1';
+        event_ready <= '0';
+        step;
+        event_ready <= '1';
+        event_valid <= '1';
+        step;
+        event_last <= '1';
+        step;
+        emit_events(1);
+        tick_chunks(BIN_CHUNKS - 1);
+        -- An event on the bin-closing tick belongs to the closing bin.
+        event_valid <= '1';
+        event_last  <= '1';
+        chunk_tick  <= '1';
+        step;
+        expect_rate(2, 2, '0', "handshake qualification and closing-bin event");
+        tick_chunks(BIN_CHUNKS);
+        expect_rate(2, 3, '0', "a closing-bin event must not reach the next bin");
+
         report "tb_event_rate_monitor passed";
         std.env.stop;
         wait;
