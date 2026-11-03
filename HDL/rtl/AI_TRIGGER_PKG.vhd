@@ -40,6 +40,13 @@ package AI_TRIGGER_PKG is
     constant EVENT_OUTPUT_FIFO_ADDR_WIDTH : integer := 7;
     constant EVENT_OUTPUT_FIFO_DEPTH : integer := 2 ** EVENT_OUTPUT_FIFO_ADDR_WIDTH;
 
+    -- Event rate monitor: a sliding window of one-second bins of ADC data time.
+    constant EVENT_RATE_BIN_CHUNKS_1S : positive := 3_906_250; -- 1 s at 1 GSa/s
+    constant EVENT_RATE_BINS : positive := 64;
+    constant EVENT_RATE_BIN_WIDTH : positive := 10;          -- saturates at 1023
+    constant EVENT_RATE_COUNT_WIDTH : positive := 16;        -- 64 x 1023 < 2**16
+    constant EVENT_RATE_WINDOW_SEC_WIDTH : positive := 7;    -- 0 to 64 bins
+
     -- ADC data types: 8 channels, 4 samples per beat, 12-bit per sample
     subtype adc_sample_t  is std_logic_vector(11 downto 0);
     type    adc_row_t     is array (0 to N_BATCH_S - 1) of adc_sample_t;

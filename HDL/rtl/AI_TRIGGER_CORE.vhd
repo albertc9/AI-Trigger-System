@@ -14,6 +14,9 @@ use ieee.numeric_std.all;
 use work.AI_TRIGGER_PKG.all;
 
 entity AI_TRIGGER_CORE is
+    generic (
+        EVENT_RATE_BIN_CHUNKS : positive := EVENT_RATE_BIN_CHUNKS_1S
+    );
     port (
         CLK_ADC        : in  std_logic;
         CLK_CNN        : in  std_logic;
@@ -52,7 +55,10 @@ entity AI_TRIGGER_CORE is
         EVENT_LOSS           : out std_logic;
         DROPPED_TRIGGER_COUNT : out unsigned(31 downto 0);
         RING_MISS_COUNT       : out unsigned(31 downto 0);
-        CHUNK_OVERFLOW        : out std_logic
+        CHUNK_OVERFLOW        : out std_logic;
+        EVENT_RATE_COUNT      : out unsigned(EVENT_RATE_COUNT_WIDTH - 1 downto 0);
+        EVENT_RATE_WINDOW_SEC : out unsigned(EVENT_RATE_WINDOW_SEC_WIDTH - 1 downto 0);
+        EVENT_RATE_HIGH       : out std_logic
     );
 end entity AI_TRIGGER_CORE;
 
@@ -198,6 +204,7 @@ begin
         result_arbiter_busy = '0' else '1';
 
     u_MULTIMODE_PATH : entity work.MULTIMODE_EVENT_PATH
+        generic map (EVENT_RATE_BIN_CHUNKS => EVENT_RATE_BIN_CHUNKS)
         port map (
             CLK_ADC              => CLK_ADC,
             CLK_CNN              => CLK_CNN,
@@ -242,7 +249,10 @@ begin
             HILO_CONFIG_ERROR    => HILO_CONFIG_ERROR,
             EVENT_LOSS           => EVENT_LOSS,
             DROPPED_TRIGGER_COUNT => DROPPED_TRIGGER_COUNT,
-            RING_MISS_COUNT       => RING_MISS_COUNT
+            RING_MISS_COUNT       => RING_MISS_COUNT,
+            EVENT_RATE_COUNT      => EVENT_RATE_COUNT,
+            EVENT_RATE_WINDOW_SEC => EVENT_RATE_WINDOW_SEC,
+            EVENT_RATE_HIGH       => EVENT_RATE_HIGH
         );
 
     result_consumed  <= result_valid and

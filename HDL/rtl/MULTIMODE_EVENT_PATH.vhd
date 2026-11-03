@@ -6,6 +6,9 @@ use xpm.vcomponents.all;
 use work.AI_TRIGGER_PKG.all;
 
 entity MULTIMODE_EVENT_PATH is
+    generic (
+        EVENT_RATE_BIN_CHUNKS : positive := EVENT_RATE_BIN_CHUNKS_1S
+    );
     port (
         CLK_ADC              : in  std_logic;
         CLK_CNN              : in  std_logic;
@@ -55,7 +58,10 @@ entity MULTIMODE_EVENT_PATH is
         HILO_CONFIG_ERROR    : out std_logic;
         EVENT_LOSS           : out std_logic;
         DROPPED_TRIGGER_COUNT : out unsigned(31 downto 0);
-        RING_MISS_COUNT       : out unsigned(31 downto 0)
+        RING_MISS_COUNT       : out unsigned(31 downto 0);
+        EVENT_RATE_COUNT      : out unsigned(EVENT_RATE_COUNT_WIDTH - 1 downto 0);
+        EVENT_RATE_WINDOW_SEC : out unsigned(EVENT_RATE_WINDOW_SEC_WIDTH - 1 downto 0);
+        EVENT_RATE_HIGH       : out std_logic
     );
 end entity MULTIMODE_EVENT_PATH;
 
@@ -137,6 +143,7 @@ architecture structural of MULTIMODE_EVENT_PATH is
     signal ring_miss_count_i : unsigned(31 downto 0);
 
     signal event_credit, event_fifo_empty : std_logic;
+    signal event_valid_i, event_last_i : std_logic;
     signal event_loss_r : std_logic := '0';
     signal dropped_count_r : unsigned(31 downto 0) := (others => '0');
 begin
@@ -467,14 +474,29 @@ begin
             WR_SCORE          => recorder_score,
             EVENT_CREDIT      => event_credit,
             FIFO_EMPTY        => event_fifo_empty,
-            RD_VALID          => EVENT_VALID,
+            RD_VALID          => event_valid_i,
             RD_READY          => EVENT_READY,
             RD_DATA           => EVENT_DATA,
-            RD_LAST           => EVENT_LAST,
+            RD_LAST           => event_last_i,
             RD_CHUNK_ID       => EVENT_CHUNK_ID,
             RD_TIMESTAMP      => EVENT_TIMESTAMP,
             RD_TRIGGER_OFFSET => EVENT_TRIGGER_OFFSET,
             RD_SCORE          => EVENT_SCORE
+        );
+
+    u_EVENT_RATE : entity work.EVENT_RATE_MONITOR
+        generic map (EVENT_RATE_BIN_CHUNKS => EVENT_RATE_BIN_CHUNKS)
+        port map (
+            CLK                   => CLK_ADC,
+            RST                   => RST_ADC,
+            CLEAR                 => mode_start,
+            CHUNK_TICK            => chunk_commit,
+            EVENT_VALID           => event_valid_i,
+            EVENT_READY           => EVENT_READY,
+            EVENT_LAST            => event_last_i,
+            EVENT_RATE_COUNT      => EVENT_RATE_COUNT,
+            EVENT_RATE_WINDOW_SEC => EVENT_RATE_WINDOW_SEC,
+            EVENT_RATE_HIGH       => EVENT_RATE_HIGH
         );
 
     path_idle <= '1' when housekeeping_busy = '0' and hl_adapter_busy = '0' and
@@ -509,6 +531,8 @@ begin
         end if;
     end process;
 
+    EVENT_VALID          <= event_valid_i;
+    EVENT_LAST           <= event_last_i;
     ACTIVE_TRIGGER_MODE  <= active_mode;
     MODE_SWITCH_PENDING  <= mode_pending_i;
     INVALID_TRIGGER_MODE <= invalid_mode_i;

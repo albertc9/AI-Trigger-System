@@ -1,0 +1,31 @@
+{
+  "source_commit": "ef510cf4f62e6bcd06f673b26c380e8156a75302",
+  "ghdl_commit": "e47ba83714661db29856a0e8d49139699f2fd6d5",
+  "ghdl_commit_note": "ef510cf changes only the OOC XDC and a Python check; HDL and Bender.yml are identical to e47ba83",
+  "ghdl_passed": 42,
+  "ghdl_failed": 0,
+  "new_ghdl_tests": [
+    "tb_event_rate_monitor",
+    "tb_multimode_event_rate"
+  ],
+  "python_tests_run": 109,
+  "python_failures": 2,
+  "python_errors": 3,
+  "python_skipped": 1,
+  "existing_python_failures_reproduced_on": "15e665a",
+  "existing_python_failures": [
+    "test_bringup_sim: matplotlib not installed in the local python3",
+    "test_real_noise_scan (3 cases): matplotlib not installed in the local python3",
+    "test_delivery_package: Bender.lock path dependencies have revision null"
+  ],
+  "fault_injection_checks": [
+    "monitor counting VALID and LAST without READY: unit test fails",
+    "event on the bin-closing tick moved to the next bin: unit test fails",
+    "monitor CLEAR tied low in MULTIMODE_EVENT_PATH: integration test fails"
+  ],
+  "dependency_parity": "38 of 38 resolved CNN core, wrapper and Hi-Lo files identical to the v4.1 server manifest of channel_gain_offset_20261015",
+  "commands": [
+    "python3 scripts/run_ghdl_tests.py",
+    "python3 -m unittest discover -s tests"
+  ]
+}

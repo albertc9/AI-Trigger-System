@@ -65,6 +65,9 @@ module tb_AI_TRIGGER_TOP;
     parameter NUM_SAMPLES_MAX     = 1000;
     parameter TIMEOUT_CYCLES_CNN  = 100_000_000;  // watchdog on CLK_CNN
     parameter OUTPUT_DRAIN_CYCLES = 8192;         // finish after input done + quiet CNN cycles
+    // Short event-rate bins so a 1000-chunk run publishes several bins while
+    // the 64-bin window is still filling.  Hardware default is one second.
+    parameter EVENT_RATE_BIN_CHUNKS = 64;
 
     parameter N_ADC_CH  = 8;
     parameter N_TRIGGER_CH = 4;
@@ -108,11 +111,14 @@ module tb_AI_TRIGGER_TOP;
     wire [31:0]  dropped_trigger_count;
     wire [31:0]  ring_miss_count;
     wire         chunk_overflow;
+    wire [15:0]  event_rate_count;
+    wire [6:0]   event_rate_window_sec;
+    wire         event_rate_high;
 
     // -------------------------------------------------------------------------
     // DUT instantiation (VHDL mixed-language bridge)
     // -------------------------------------------------------------------------
-    AI_TRIGGER_TOP_TB_WRAP dut (
+    AI_TRIGGER_TOP_TB_WRAP #(.EVENT_RATE_BIN_CHUNKS (EVENT_RATE_BIN_CHUNKS)) dut (
         .CLK_ADC        (clk_adc),
         .ADC_SRC_CLK    (clk_adc_src),
         .CLK_CNN        (clk_cnn),
@@ -149,7 +155,10 @@ module tb_AI_TRIGGER_TOP;
         .ADC_INPUT_OVERFLOW_COUNT (adc_input_overflow_count),
         .DROPPED_TRIGGER_COUNT (dropped_trigger_count),
         .RING_MISS_COUNT       (ring_miss_count),
-        .CHUNK_OVERFLOW (chunk_overflow)
+        .CHUNK_OVERFLOW (chunk_overflow),
+        .EVENT_RATE_COUNT      (event_rate_count),
+        .EVENT_RATE_WINDOW_SEC (event_rate_window_sec),
+        .EVENT_RATE_HIGH       (event_rate_high)
     );
 
     // -------------------------------------------------------------------------
@@ -194,6 +203,7 @@ module tb_AI_TRIGGER_TOP;
     integer overflow_count = 0;
     integer event_count    = 0;
     integer event_batch_count = 0;
+    integer event_rate_publish_count = 0;
     bit input_done = 0;
     bit sim_done = 0;
 
@@ -344,6 +354,7 @@ module tb_AI_TRIGGER_TOP;
             input_driver_thread();
             force_trigger_driver_thread();
             event_monitor_thread();
+            event_rate_monitor_thread();
         join_none
 
         output_monitor_thread();
@@ -555,6 +566,36 @@ module tb_AI_TRIGGER_TOP;
     endtask
 
     // =========================================================================
+    // Event rate monitor (CLK_ADC domain)
+    //
+    // The mode starts before this thread, and the 64-bin window does not fill
+    // within NUM_SAMPLES_MAX chunks, so every published count must equal the
+    // events that event_monitor_thread() has seen up to and including the
+    // publishing clock edge.
+    // =========================================================================
+    task automatic event_rate_monitor_thread;
+        reg [6:0] previous_window_sec;
+        begin
+            previous_window_sec = event_rate_window_sec;
+            forever begin
+                @(posedge clk_adc);
+                #0.1;
+                if (event_rate_window_sec != previous_window_sec) begin
+                    if (event_rate_window_sec != previous_window_sec + 7'd1)
+                        $fatal(1, "event rate window advanced from %0d to %0d",
+                               previous_window_sec, event_rate_window_sec);
+                    if (event_rate_count != event_count[15:0] || event_rate_high)
+                        $fatal(1, "event rate %0d (high=%0d) after %0d bins, observed %0d events",
+                               event_rate_count, event_rate_high,
+                               event_rate_window_sec, event_count);
+                    event_rate_publish_count = event_rate_publish_count + 1;
+                    previous_window_sec = event_rate_window_sec;
+                end
+            end
+        end
+    endtask
+
+    // =========================================================================
     // Event drain
     //
     // CNN results can arrive before the event-capture stream has finished
@@ -701,6 +742,10 @@ module tb_AI_TRIGGER_TOP;
             $display("Hi-Lo blanking:   %0d", hilo_blanking);
             $display("Hi-Lo cfg error:  %0d", hilo_config_error);
             $display("Event loss:       %0d", event_loss);
+            $display("Event rate bin:   %0d chunks", EVENT_RATE_BIN_CHUNKS);
+            $display("Event rate:       %0d events in %0d bins (high=%0d, %0d checked publications)",
+                     event_rate_count, event_rate_window_sec, event_rate_high,
+                     event_rate_publish_count);
 
             if (active_trigger_mode != trigger_mode || mode_switch_pending ||
                 invalid_trigger_mode || hilo_config_error)

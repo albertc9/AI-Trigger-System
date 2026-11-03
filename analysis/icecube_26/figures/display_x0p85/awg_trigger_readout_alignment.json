@@ -1,0 +1,77 @@
+{
+  "event": "ai_event_0003",
+  "event_timestamp_unconverted": 336888,
+  "capture_samples_per_channel": 256,
+  "capture_sample_period_ns": 1.0,
+  "plotted_capture_channels": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "reference_channels": [
+    0,
+    2
+  ],
+  "capture_AC_RMS_mV": [
+    2.7319607976218654,
+    2.592539210973676,
+    2.863535172254436,
+    2.4801832132370443
+  ],
+  "capture_mean_mV": [
+    0.0091552734375,
+    0.00762939453125,
+    0.020599365234375,
+    -0.01373291015625
+  ],
+  "display_amplitude_multiplier_by_channel": [
+    0.85,
+    1.0,
+    0.85,
+    1.0
+  ],
+  "displayed_capture_AC_RMS_mV": [
+    2.3221666779785854,
+    2.592539210973676,
+    2.434004896416271,
+    2.4801832132370443
+  ],
+  "displayed_reference_AC_RMS_mV": {
+    "0": 1.895705874104103,
+    "2": 2.0408071475353218
+  },
+  "matches": {
+    "0": {
+      "first_sample_in_awg_record_ns": 303.525,
+      "last_sample_in_awg_record_ns": 558.525,
+      "window_end_in_awg_record_ns_exclusive": 559.525,
+      "first_sample_original_csv_time_ns": 203.52499999999998,
+      "last_sample_original_csv_time_ns": 458.525,
+      "pearson_r": 0.9495708075818509,
+      "alignment_grid_ns": 0.025,
+      "reference_amplitude_multiplier": 1.0,
+      "reference_offset_added_mV": 0.0
+    },
+    "2": {
+      "first_sample_in_awg_record_ns": 300.3,
+      "last_sample_in_awg_record_ns": 555.3,
+      "window_end_in_awg_record_ns_exclusive": 556.3,
+      "first_sample_original_csv_time_ns": 200.3,
+      "last_sample_original_csv_time_ns": 455.29999999999995,
+      "pearson_r": 0.9501330288527715,
+      "alignment_grid_ns": 0.025,
+      "reference_amplitude_multiplier": 1.0,
+      "reference_offset_added_mV": 0.0
+    }
+  },
+  "voltage_scale": "Signed ADC code * 800 / 4096 mV, before CNN gain",
+  "amplitude_processing": "Ch0 and Ch2 reference and recording multiplied by 0.85 for display; Ch1 and Ch3 unchanged. Source data and alignment remain unscaled; no amplitude fitting, DC subtraction or RMS normalization.",
+  "alignment": "Independent channel time shifts; periodic linear interpolation of the post-HPF reference only",
+  "timing_note": "The 0.025 ns search grid is not a timing-accuracy measurement. No exact trigger-decision time is inferred.",
+  "software_versions": {
+    "python": "3.14.6",
+    "numpy": "2.4.6",
+    "matplotlib": "3.11.0"
+  }
+}
