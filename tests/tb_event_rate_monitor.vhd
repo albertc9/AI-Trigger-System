@@ -100,6 +100,25 @@ begin
         tick_chunks(1);
         expect_rate(3, 1, '0', "first completed bin");
 
+        emit_events(2);
+        tick_chunks(1);
+        expect_rate(3, 1, '0', "outputs must hold while a bin is open");
+        tick_chunks(BIN_CHUNKS - 1);
+        expect_rate(5, 2, '0', "second completed bin");
+
+        for bin_idx in 3 to EVENT_RATE_BINS loop
+            emit_events(2);
+            tick_chunks(BIN_CHUNKS);
+        end loop;
+        expect_rate(129, 64, '0', "full window of 64 bins");
+
+        emit_events(5);
+        tick_chunks(BIN_CHUNKS);
+        expect_rate(131, 64, '0', "the oldest bin must leave the window");
+
+        tick_chunks(BIN_CHUNKS);
+        expect_rate(129, 64, '0', "an empty bin must replace the next-oldest bin");
+
         report "tb_event_rate_monitor passed";
         std.env.stop;
         wait;
