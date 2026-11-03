@@ -1,6 +1,9 @@
 `timescale 1ns/1ps
 module tb_native_system;
     localparam MAX_WINDOWS = 4096;
+    // Short event-rate bins: one run publishes several bins and never fills
+    // the 64-bin window, so each published count equals all events since reset.
+    localparam EVENT_RATE_BIN_CHUNKS = 64;
     reg clk_adc = 0, clk_cnn = 0, rst = 1, data_str = 0;
     always #2 clk_adc = ~clk_adc;
     real phase = 0;
@@ -21,6 +24,11 @@ module tb_native_system;
     wire [5:0] event_offset;
     wire [3:0] active_mode;
     wire [31:0] dropped, ring_miss;
+    wire [15:0] rate_count;
+    wire [6:0] rate_window_sec;
+    wire rate_high;
+    reg [6:0] last_rate_window_sec = 0;
+    integer rate_publications = 0;
     integer overload = 0;
     bit allow_loss = 0;
     integer windows = 1096, gap = 0, received = 0, events = 0, event_beat = 0;
@@ -35,7 +43,7 @@ module tb_native_system;
         qualifies = ($itor($signed(native_score[20:0])) / 1024.0) >
                     ($itor($signed(external_threshold)) / 16.0);
     endfunction
-    AI_TRIGGER_TOP_TB_WRAP #(.DIRECT_ADC(1)) dut (
+    AI_TRIGGER_TOP_TB_WRAP #(.DIRECT_ADC(1), .EVENT_RATE_BIN_CHUNKS(EVENT_RATE_BIN_CHUNKS)) dut (
         .CLK_ADC(clk_adc), .ADC_SRC_CLK(clk_adc), .CLK_CNN(clk_cnn), .RST(rst),
         .DATA_STR(data_str), .ADC_DATA4_FLAT(adc_data), .TRIGGER_MODE(4'd2),
         .FORCE_TRIGGER(1'b0), .CNN_THRESH(threshold), .HL_THRESH(12'd100),
@@ -45,8 +53,24 @@ module tb_native_system;
         .EVENT_LAST(event_last), .EVENT_CHUNK_ID(event_id), .EVENT_TIMESTAMP(event_timestamp),
         .EVENT_TRIGGER_OFFSET(event_offset), .EVENT_SCORE(event_score),
         .ACTIVE_TRIGGER_MODE(active_mode), .EVENT_LOSS(event_loss),
-        .DROPPED_TRIGGER_COUNT(dropped), .RING_MISS_COUNT(ring_miss), .CHUNK_OVERFLOW(overflow)
+        .DROPPED_TRIGGER_COUNT(dropped), .RING_MISS_COUNT(ring_miss), .CHUNK_OVERFLOW(overflow),
+        .EVENT_RATE_COUNT(rate_count), .EVENT_RATE_WINDOW_SEC(rate_window_sec),
+        .EVENT_RATE_HIGH(rate_high)
     );
+    // Outputs and the event counter below both update on the rising edge, so
+    // compare them half a cycle later whenever a bin is published.
+    always @(negedge clk_adc) if (!rst && rate_window_sec != last_rate_window_sec) begin
+        if (rate_window_sec != 0) begin
+            if (rate_window_sec != last_rate_window_sec + 7'd1)
+                $fatal(1, "event rate window advanced from %0d to %0d",
+                       last_rate_window_sec, rate_window_sec);
+            if (rate_count != events[15:0] || rate_high)
+                $fatal(1, "event rate=%0d high=%b after %0d bins, observed events=%0d",
+                       rate_count, rate_high, rate_window_sec, events);
+            rate_publications++;
+        end
+        last_rate_window_sec = rate_window_sec;
+    end
     always @(posedge clk_cnn) if (!rst && score_valid) begin
         if (score_id < 1 || score_id > windows) $fatal(1, "unexpected score id %0d", score_id);
         if (seen[score_id-1]) $fatal(1, "duplicate score id %0d", score_id);
@@ -139,7 +163,10 @@ module tb_native_system;
         repeat(200) @(negedge clk_adc);
         if (received != windows || events != expected_events || event_beat != 0)
             $fatal(1,"incorrect completion counts");
-        $display("PASS native system windows=%0d events=%0d gap=%0d phase=%0f",received,events,gap,phase);
+        if (rate_publications == 0)
+            $fatal(1,"no event rate bin was published");
+        $display("PASS native system windows=%0d events=%0d gap=%0d phase=%0f rate_bins=%0d rate_events=%0d",
+                 received,events,gap,phase,rate_publications,rate_count);
         $finish;
     end
     initial begin
