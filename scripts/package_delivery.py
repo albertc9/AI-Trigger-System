@@ -59,6 +59,30 @@ def git_dirty_suffix() -> str:
     return ""
 
 
+def dependency_revisions(lock_path: Path) -> dict[str, str]:
+    """Return locked revisions; path dependencies report their checkout HEAD."""
+    revisions: dict[str, str] = {}
+    package = ""
+    for line in lock_path.read_text(encoding="utf-8").splitlines():
+        package_match = re.fullmatch(r"  ([a-z0-9-]+):", line)
+        if package_match:
+            package = package_match.group(1)
+            continue
+        revision_match = re.fullmatch(r"    revision: ([0-9a-f]+)", line)
+        if package and revision_match:
+            revisions[package] = revision_match.group(1)
+            continue
+        path_match = re.fullmatch(r"      Path: (.+)", line)
+        if package and path_match and package not in revisions:
+            checkout = path_match.group(1)
+            head = run(["git", "-C", checkout, "rev-parse", "HEAD"])
+            if head.returncode == 0:
+                status = run(["git", "-C", checkout, "status", "--short"])
+                dirty = "-dirty" if status.returncode == 0 and status.stdout.strip() else ""
+                revisions[package] = head.stdout.strip() + dirty
+    return revisions
+
+
 def sanitize_version(version: str) -> str:
     value = version.strip()
     if not value:
@@ -164,20 +188,11 @@ def write_add_files_tcl(package_dir: Path, rtl_paths: list[Path]) -> None:
 def write_version(package_dir: Path, version: str) -> None:
     commit = git_value(["rev-parse", "--short=12", "HEAD"], "unknown") + git_dirty_suffix()
     branch = git_value(["branch", "--show-current"], "unknown")
-    wrapper_revision = "unknown"
-    core_revision = "unknown"
-    hilo_revision = "unknown"
     lock = ROOT / "Bender.lock"
-    if lock.exists():
-        match = re.search(r"cnn-core-wrapper:.*?revision:\s*([0-9a-f]+)", lock.read_text(encoding="utf-8"), re.S)
-        if match:
-            wrapper_revision = match.group(1)
-        match = re.search(r"cnn-core:.*?revision:\s*([0-9a-f]+)", lock.read_text(encoding="utf-8"), re.S)
-        if match:
-            core_revision = match.group(1)
-        match = re.search(r"hilo-trigger:.*?revision:\s*([0-9a-f]+)", lock.read_text(encoding="utf-8"), re.S)
-        if match:
-            hilo_revision = match.group(1)
+    revisions = dependency_revisions(lock) if lock.exists() else {}
+    wrapper_revision = revisions.get("cnn-core-wrapper", "unknown")
+    core_revision = revisions.get("cnn-core", "unknown")
+    hilo_revision = revisions.get("hilo-trigger", "unknown")
 
     content = "\n".join(
         [
