@@ -188,9 +188,33 @@ the final beat.
 | `HILO_BLANKING` | out | Hi-Lo rate protection is intentionally suppressing decisions. |
 | `HILO_CONFIG_ERROR` | out | Latched Hi-Lo configuration is unsafe; Hi-Lo decisions fail closed. |
 | `EVENT_LOSS` | out | Sticky indication that an otherwise relevant trigger/event was dropped. |
+| `EVENT_RATE_COUNT[15:0]` | out | Emitted events in the last `EVENT_RATE_WINDOW_SEC` seconds of ADC data. Updated once per second. |
+| `EVENT_RATE_WINDOW_SEC[6:0]` | out | Seconds covered by `EVENT_RATE_COUNT`, `0..64`; `64` means the window is full. |
+| `EVENT_RATE_HIGH` | out | At least one second in the window had 1023 or more events, so `EVENT_RATE_COUNT` is a lower bound. |
 
 The delivered interface does not expose CNN score, internal chunk ID, or debug
 counters.
+
+### Event rate
+
+The event rate is a coarse monitor for the DAQ and host. An event is counted
+when its final beat transfers (`EVENT_VALID && EVENT_READY && EVENT_LAST`).
+Counts are kept per second of ADC data time: one second is 3,906,250 accepted
+256-sample chunks, which is one wall-clock second at 1 GSa/s. The seconds
+advance only while `DATA_STR` delivers data. The last 64 completed seconds form
+a sliding window, and all three outputs change together once per completed
+second and are stable in between.
+
+```text
+rate_hz = EVENT_RATE_COUNT / EVENT_RATE_WINDOW_SEC    (EVENT_RATE_WINDOW_SEC > 0)
+```
+
+Each one-second bin saturates at 1023 events, so the 16-bit count cannot
+overflow (64 x 1023 = 65472). `EVENT_RATE_HIGH` stays high while a saturated
+second remains in the window and clears when it leaves. Reset and every change
+of `ACTIVE_TRIGGER_MODE` clear the window, and `EVENT_RATE_WINDOW_SEC` counts
+up from 0 again. The bin length is the `AI_TRIGGER_TOP` generic
+`EVENT_RATE_BIN_CHUNKS` (default 3906250); shorter values are for simulation.
 
 DAQ-side sampling contract:
 

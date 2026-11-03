@@ -150,6 +150,19 @@ events and only starts a new event when one full-event credit is available.
 Status outputs report the active mode, pending mode switch, invalid mode,
 Hi-Lo rate blanking, invalid Hi-Lo configuration, and sticky event loss.
 
+### Event rate
+
+`EVENT_RATE_COUNT[15:0]` is the number of emitted events (final beat
+transferred) in the last `EVENT_RATE_WINDOW_SEC[6:0]` seconds, so the rate is
+`EVENT_RATE_COUNT / EVENT_RATE_WINDOW_SEC` Hz. One second is 3,906,250 accepted
+chunks of ADC data (exact at 1 GSa/s); the window holds the last 64 completed
+seconds and the outputs update once per second. Each second saturates at 1023
+events; `EVENT_RATE_HIGH` marks a window containing such a second, in which case
+the count is a lower bound. Reset and every active-mode change restart the
+window from 0 seconds. The `AI_TRIGGER_TOP` generic `EVENT_RATE_BIN_CHUNKS`
+shortens the second for simulation only. See
+[Deliverables.md](docs/Deliverables.md#event-rate).
+
 ## Source layout
 
 | Path | Contents |
