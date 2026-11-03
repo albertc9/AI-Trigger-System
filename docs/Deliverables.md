@@ -195,6 +195,17 @@ the final beat.
 The delivered interface does not expose CNN score, internal chunk ID, or debug
 counters.
 
+DAQ-side sampling contract:
+
+```text
+if EVENT_VALID && EVENT_READY:
+    read EVENT_DATA
+    read EVENT_TIMESTAMP
+    read EVENT_TRIGGER_OFFSET
+    if EVENT_LAST:
+        event finished
+```
+
 ### Event rate
 
 The event rate is a coarse monitor for the DAQ and host. An event is counted
@@ -215,17 +226,6 @@ second remains in the window and clears when it leaves. Reset and every change
 of `ACTIVE_TRIGGER_MODE` clear the window, and `EVENT_RATE_WINDOW_SEC` counts
 up from 0 again. The bin length is the `AI_TRIGGER_TOP` generic
 `EVENT_RATE_BIN_CHUNKS` (default 3906250); shorter values are for simulation.
-
-DAQ-side sampling contract:
-
-```text
-if EVENT_VALID && EVENT_READY:
-    read EVENT_DATA
-    read EVENT_TIMESTAMP
-    read EVENT_TRIGGER_OFFSET
-    if EVENT_LAST:
-        event finished
-```
 
 ## How to test?
 
