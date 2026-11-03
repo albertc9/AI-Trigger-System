@@ -25,6 +25,7 @@ set_false_path -hold -from [get_ports -quiet {TRIGGER_MODE* FORCE_TRIGGER CNN_TH
 
 set_output_delay 0.000 -clock [get_clocks CLK_ADC] [get_ports -quiet {EVENT_VALID EVENT_DATA* EVENT_LAST EVENT_TIMESTAMP* EVENT_TRIGGER_OFFSET*}]
 set_output_delay 0.000 -clock [get_clocks CLK_ADC] [get_ports -quiet {ACTIVE_TRIGGER_MODE* MODE_SWITCH_PENDING INVALID_TRIGGER_MODE HILO_BLANKING HILO_CONFIG_ERROR EVENT_LOSS}]
+set_output_delay 0.000 -clock [get_clocks CLK_ADC] [get_ports -quiet {EVENT_RATE_COUNT* EVENT_RATE_WINDOW_SEC* EVENT_RATE_HIGH}]
 
 # RST is a reset/control input, not a sampled OOC data interface.  Timing it
 # with zero input delay creates artificial hold checks into reset pins.
