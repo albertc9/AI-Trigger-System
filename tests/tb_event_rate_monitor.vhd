@@ -132,6 +132,33 @@ begin
         tick_chunks(BIN_CHUNKS);
         expect_rate(0, 64, '0', "HIGH must clear when the saturated bin leaves");
 
+        -- A mode start clears the window, the open bin and the bin phase.
+        emit_events(1030);
+        tick_chunks(BIN_CHUNKS);
+        expect_rate(1023, 64, '1', "saturated window before a mode start");
+        emit_events(2);
+        tick_chunks(1);
+        clear <= '1';
+        step;
+        clear <= '0';
+        expect_rate(0, 0, '0', "CLEAR must zero the published rate immediately");
+        emit_events(1);
+        tick_chunks(BIN_CHUNKS - 1);
+        expect_rate(0, 0, '0', "CLEAR must restart the bin phase");
+        tick_chunks(1);
+        expect_rate(1, 1, '0', "CLEAR must discard events of the open bin");
+
+        -- Reset clears the same state.
+        emit_events(3);
+        tick_chunks(BIN_CHUNKS);
+        expect_rate(4, 2, '0', "window before reset");
+        rst <= '1';
+        step;
+        rst <= '0';
+        expect_rate(0, 0, '0', "RST must zero the published rate");
+        tick_chunks(BIN_CHUNKS);
+        expect_rate(0, 1, '0', "first bin after reset");
+
         report "tb_event_rate_monitor passed";
         std.env.stop;
         wait;
